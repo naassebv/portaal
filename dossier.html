@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>NAASSE B.V. – Personeelsdossier</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; line-height: 1.45; color: #222; background: #f6f6f4; margin: 0; }
+  main { max-width: 560px; margin: 0 auto; padding: 20px 16px 48px; background: #fff; min-height: 100vh; }
+  h1 { font-size: 1.35em; margin: 0 0 4px; }
+  h2 { font-size: 1.05em; margin: 26px 0 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  p.small { color: #555; font-size: 0.92em; }
+  label { display: block; font-weight: bold; margin: 12px 0 4px; font-size: 0.95em; }
+  label .opt { font-weight: normal; color: #777; }
+  input[type=text], input[type=email], select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #bbb; border-radius: 4px; background: #fff; }
+  input[type=file] { width: 100%; font-size: 15px; padding: 6px 0; }
+  .row { display: flex; gap: 10px; }
+  .row > div { flex: 1; }
+  .row > div.narrow { flex: 0 0 35%; }
+  .help { font-size: 0.85em; color: #666; margin-top: 3px; }
+  .err { color: #b00020; font-size: 0.88em; margin-top: 3px; display: none; }
+  .invalid input, .invalid select { border-color: #b00020; }
+  .invalid .err { display: block; }
+  .preview { max-width: 120px; max-height: 80px; margin-top: 6px; border: 1px solid #ddd; display: none; }
+  button { width: 100%; margin-top: 26px; padding: 14px; font-size: 17px; background: #1a5fb4; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+  button:disabled { background: #888; }
+  .box { padding: 14px; border-radius: 4px; margin: 16px 0; }
+  .box.info { background: #eef4fb; }
+  .box.bad { background: #fdecee; color: #7a0014; }
+  .box.good { background: #e8f5e9; color: #1b5e20; }
+  #lang { width: auto; float: right; padding: 4px; font-size: 14px; }
+  footer { margin-top: 32px; font-size: 0.85em; color: #666; }
+  [dir=rtl] #lang { float: left; }
+</style>
+</head>
+<body>
+<main>
+  <select id="lang" aria-label="Language"></select>
+  <h1 data-t="title"></h1>
+  <p id="hello" class="small"></p>
+
+  <div id="loading" class="box info" data-t="loading"></div>
+  <div id="linkError" class="box bad" style="display:none" data-t="invalidLink"></div>
+  <div id="done" class="box good" style="display:none" data-t="done"></div>
+
+  <form id="form" style="display:none" novalidate>
+    <p class="small" data-t="intro"></p>
+
+    <h2 data-t="address"></h2>
+    <div class="field" data-f="street"><label for="street" data-t="street"></label><input type="text" id="street" name="street" autocomplete="address-line1"><div class="err" data-t="errRequired"></div></div>
+    <div class="row">
+      <div class="field narrow" data-f="houseNumber"><label for="houseNumber" data-t="houseNumber"></label><input type="text" id="houseNumber" name="houseNumber" inputmode="text"><div class="err" data-t="errRequired"></div></div>
+      <div class="field" data-f="postcode"><label for="postcode" data-t="postcode"></label><input type="text" id="postcode" name="postcode" autocomplete="postal-code"><div class="err" data-t="errPostcode"></div></div>
+    </div>
+    <div class="field" data-f="city"><label for="city" data-t="city"></label><input type="text" id="city" name="city" autocomplete="address-level2"><div class="err" data-t="errRequired"></div></div>
+    <div class="field" data-f="country"><label for="country" data-t="country"></label><select id="country" name="country"></select><div class="err" data-t="errRequired"></div></div>
+    <div class="field" data-f="nationality"><label for="nationality"><span data-t="nationality"></span> <span class="opt" data-t="optional"></span></label><input type="text" id="nationality" name="nationality"></div>
+    <div class="field" data-f="email"><label for="email"><span data-t="email"></span> <span class="opt" data-t="optional"></span></label><input type="email" id="email" name="email" autocomplete="email"><div class="err" data-t="errEmail"></div></div>
+
+    <h2 data-t="bsnBank"></h2>
+    <div class="field" data-f="bsn"><label for="bsn"><span data-t="bsn"></span></label><input type="text" id="bsn" name="bsn" inputmode="numeric" autocomplete="off" maxlength="11"><div class="help" data-t="bsnHelp"></div><div class="err" data-t="errBsn"></div></div>
+    <div class="field" data-f="iban"><label for="iban" data-t="iban"></label><input type="text" id="iban" name="iban" autocomplete="off" placeholder="NL00 BANK 0123 4567 89"><div class="err" data-t="errIban"></div></div>
+    <div class="field" data-f="ibanHolder"><label for="ibanHolder" data-t="ibanHolder"></label><input type="text" id="ibanHolder" name="ibanHolder" autocomplete="name"><div class="err" data-t="errRequired"></div></div>
+
+    <h2 data-t="documents"></h2>
+    <div class="field" data-f="idType"><label for="idType" data-t="idType"></label>
+      <select id="idType" name="idType">
+        <option value="passport" data-t="passport"></option>
+        <option value="id_card" data-t="idCard"></option>
+        <option value="residence_permit" data-t="residence"></option>
+        <option value="other" data-t="otherDoc"></option>
+      </select>
+    </div>
+    <div class="field" data-f="id_front"><label for="id_front" data-t="idFront"></label><input type="file" id="id_front" accept="image/*,application/pdf"><img class="preview" alt=""><div class="err" data-t="errFile"></div></div>
+    <div class="field" data-f="id_back" id="backField"><label for="id_back" data-t="idBack"></label><input type="file" id="id_back" accept="image/*,application/pdf"><img class="preview" alt=""><div class="err" data-t="errFile"></div></div>
+    <div class="field" data-f="bank_card"><label for="bank_card" data-t="bankCard"></label><input type="file" id="bank_card" accept="image/*,application/pdf"><img class="preview" alt=""><div class="help" data-t="bankCardHelp"></div><div class="err" data-t="errFile"></div></div>
+    <div class="field" data-f="bsn_proof"><label for="bsn_proof"><span data-t="bsnProof"></span> <span class="opt" data-t="optional"></span></label><input type="file" id="bsn_proof" accept="image/*,application/pdf"><img class="preview" alt=""></div>
+
+    <div id="formError" class="box bad" style="display:none"></div>
+    <button type="submit" id="submit" data-t="submit"></button>
+    <p class="small" data-t="safety"></p>
+  </form>
+
+  <footer><a href="privacy.html" data-t="privacy"></a> · NAASSE B.V., Rotterdam</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var API = "https://fmbxukaclfoonsackyqs.supabase.co/functions/v1/portal";
+
+  var T = {
+    en: {
+      title: "Personnel file", loading: "Checking your link…", hello: "Hello {name},",
+      invalidLink: "This link is no longer valid. It may have expired or already been used. Send a message to NAASSE on WhatsApp to receive a new link.",
+      intro: "Please fill in your details and add a photo of your ID and bank card. Your details are sent securely and are only used for your personnel file and payroll.",
+      address: "Address", street: "Street", houseNumber: "House number", postcode: "Postcode", city: "City", country: "Country",
+      nationality: "Nationality", email: "E-mail", optional: "(optional)",
+      bsnBank: "BSN and bank account", bsn: "BSN (citizen service number)", bsnHelp: "9 digits. Don't have a BSN yet? Leave this empty.",
+      iban: "Bank account (IBAN)", ibanHolder: "Account holder name",
+      documents: "Documents", idType: "Type of ID", passport: "Passport", idCard: "ID card", residence: "Residence permit", otherDoc: "Other",
+      idFront: "Photo of your ID – front (page with photo)", idBack: "Photo of your ID – back", bankCard: "Photo of your bank card",
+      bankCardHelp: "The name and account number must be readable. You may cover the card number.", bsnProof: "Proof of BSN (letter or document)",
+      submit: "Send securely", sending: "Sending…", safety: "Do not send these documents by WhatsApp.",
+      done: "Thank you, we have received your details and documents. You can close this page.",
+      errRequired: "Please fill this in.", errPostcode: "Check the postcode (for example 3065 GL).", errEmail: "Check the e-mail address.",
+      errBsn: "This BSN is not correct. Check the 9 digits.", errIban: "This IBAN is not correct. Check the number.",
+      errFile: "Please add a clear photo (JPG, PNG) or PDF, max 8 MB.", errGeneral: "Not everything is filled in correctly. Check the red fields.",
+      errServer: "Sending failed. Please try again in a few minutes.", privacy: "Privacy statement"
+    },
+    nl: {
+      title: "Personeelsdossier", loading: "Je link wordt gecontroleerd…", hello: "Hallo {name},",
+      invalidLink: "Deze link is niet meer geldig. Hij is verlopen of al gebruikt. Stuur NAASSE een WhatsApp-bericht voor een nieuwe link.",
+      intro: "Vul je gegevens in en voeg een foto toe van je identiteitsbewijs en je bankpas. Je gegevens worden beveiligd verstuurd en alleen gebruikt voor je personeelsdossier en de loonadministratie.",
+      address: "Adres", street: "Straat", houseNumber: "Huisnummer", postcode: "Postcode", city: "Woonplaats", country: "Land",
+      nationality: "Nationaliteit", email: "E-mail", optional: "(optioneel)",
+      bsnBank: "BSN en bankrekening", bsn: "BSN (burgerservicenummer)", bsnHelp: "9 cijfers. Heb je nog geen BSN? Laat dit dan leeg.",
+      iban: "Bankrekening (IBAN)", ibanHolder: "Naam rekeninghouder",
+      documents: "Documenten", idType: "Soort identiteitsbewijs", passport: "Paspoort", idCard: "Identiteitskaart", residence: "Verblijfsdocument", otherDoc: "Anders",
+      idFront: "Foto identiteitsbewijs – voorkant (pagina met foto)", idBack: "Foto identiteitsbewijs – achterkant", bankCard: "Foto van je bankpas",
+      bankCardHelp: "Naam en rekeningnummer moeten leesbaar zijn. Het kaartnummer mag je afdekken.", bsnProof: "Bewijs van BSN (brief of document)",
+      submit: "Beveiligd versturen", sending: "Bezig met versturen…", safety: "Stuur deze documenten niet via WhatsApp.",
+      done: "Dank je, we hebben je gegevens en documenten ontvangen. Je kunt deze pagina sluiten.",
+      errRequired: "Vul dit in.", errPostcode: "Controleer de postcode (bijvoorbeeld 3065 GL).", errEmail: "Controleer het e-mailadres.",
+      errBsn: "Dit BSN klopt niet. Controleer de 9 cijfers.", errIban: "Dit IBAN klopt niet. Controleer het nummer.",
+      errFile: "Voeg een duidelijke foto (JPG, PNG) of pdf toe, maximaal 8 MB.", errGeneral: "Niet alles is goed ingevuld. Kijk bij de rode velden.",
+      errServer: "Versturen is mislukt. Probeer het over een paar minuten opnieuw.", privacy: "Privacyverklaring"
+    },
+    ro: {
+      title: "Dosar de personal", loading: "Verificăm linkul…", hello: "Bună ziua {name},",
+      invalidLink: "Acest link nu mai este valabil. A expirat sau a fost deja folosit. Trimiteți un mesaj pe WhatsApp către NAASSE pentru un link nou.",
+      intro: "Completați datele și adăugați o fotografie a actului de identitate și a cardului bancar. Datele sunt trimise securizat și folosite doar pentru dosarul de personal și salarizare.",
+      address: "Adresă", street: "Strada", houseNumber: "Număr", postcode: "Cod poștal", city: "Localitate", country: "Țara",
+      nationality: "Naționalitate", email: "E-mail", optional: "(opțional)",
+      bsnBank: "BSN și cont bancar", bsn: "BSN (număr de identificare)", bsnHelp: "9 cifre. Nu aveți încă BSN? Lăsați gol.",
+      iban: "Cont bancar (IBAN)", ibanHolder: "Numele titularului",
+      documents: "Documente", idType: "Tip de act", passport: "Pașaport", idCard: "Carte de identitate", residence: "Permis de ședere", otherDoc: "Altul",
+      idFront: "Fotografie act – față (pagina cu poza)", idBack: "Fotografie act – verso", bankCard: "Fotografie card bancar",
+      bankCardHelp: "Numele și numărul contului trebuie să fie lizibile. Puteți acoperi numărul cardului.", bsnProof: "Dovada BSN (scrisoare sau document)",
+      submit: "Trimite securizat", sending: "Se trimite…", safety: "Nu trimiteți aceste documente pe WhatsApp.",
+      done: "Mulțumim, am primit datele și documentele. Puteți închide pagina.",
+      errRequired: "Completați acest câmp.", errPostcode: "Verificați codul poștal (de ex. 3065 GL).", errEmail: "Verificați adresa de e-mail.",
+      errBsn: "BSN incorect. Verificați cele 9 cifre.", errIban: "IBAN incorect. Verificați numărul.",
+      errFile: "Adăugați o fotografie clară (JPG, PNG) sau PDF, max. 8 MB.", errGeneral: "Nu totul este completat corect. Verificați câmpurile roșii.",
+      errServer: "Trimiterea a eșuat. Încercați din nou peste câteva minute.", privacy: "Declarație de confidențialitate"
+    },
+    fr: {
+      title: "Dossier du personnel", loading: "Vérification du lien…", hello: "Bonjour {name},",
+      invalidLink: "Ce lien n'est plus valable. Il a expiré ou a déjà été utilisé. Envoyez un message WhatsApp à NAASSE pour recevoir un nouveau lien.",
+      intro: "Remplissez vos coordonnées et ajoutez une photo de votre pièce d'identité et de votre carte bancaire. Vos données sont envoyées de façon sécurisée et utilisées uniquement pour votre dossier et la paie.",
+      address: "Adresse", street: "Rue", houseNumber: "Numéro", postcode: "Code postal", city: "Ville", country: "Pays",
+      nationality: "Nationalité", email: "E-mail", optional: "(facultatif)",
+      bsnBank: "BSN et compte bancaire", bsn: "BSN (numéro de service citoyen)", bsnHelp: "9 chiffres. Pas encore de BSN ? Laissez vide.",
+      iban: "Compte bancaire (IBAN)", ibanHolder: "Nom du titulaire",
+      documents: "Documents", idType: "Type de pièce d'identité", passport: "Passeport", idCard: "Carte d'identité", residence: "Titre de séjour", otherDoc: "Autre",
+      idFront: "Photo de la pièce – recto (page avec photo)", idBack: "Photo de la pièce – verso", bankCard: "Photo de votre carte bancaire",
+      bankCardHelp: "Le nom et le numéro de compte doivent être lisibles. Vous pouvez cacher le numéro de carte.", bsnProof: "Preuve du BSN (lettre ou document)",
+      submit: "Envoyer en sécurité", sending: "Envoi en cours…", safety: "N'envoyez pas ces documents par WhatsApp.",
+      done: "Merci, nous avons reçu vos données et documents. Vous pouvez fermer cette page.",
+      errRequired: "Veuillez remplir ce champ.", errPostcode: "Vérifiez le code postal (par ex. 3065 GL).", errEmail: "Vérifiez l'adresse e-mail.",
+      errBsn: "Ce BSN n'est pas correct. Vérifiez les 9 chiffres.", errIban: "Cet IBAN n'est pas correct. Vérifiez le numéro.",
+      errFile: "Ajoutez une photo nette (JPG, PNG) ou un PDF, 8 Mo max.", errGeneral: "Tout n'est pas correctement rempli. Vérifiez les champs en rouge.",
+      errServer: "L'envoi a échoué. Réessayez dans quelques minutes.", privacy: "Déclaration de confidentialité"
+    },
+    es: {
+      title: "Expediente de personal", loading: "Comprobando tu enlace…", hello: "Hola {name},",
+      invalidLink: "Este enlace ya no es válido. Ha caducado o ya se ha usado. Envía un mensaje de WhatsApp a NAASSE para recibir uno nuevo.",
+      intro: "Rellena tus datos y añade una foto de tu documento de identidad y de tu tarjeta bancaria. Tus datos se envían de forma segura y solo se usan para tu expediente y la nómina.",
+      address: "Dirección", street: "Calle", houseNumber: "Número", postcode: "Código postal", city: "Ciudad", country: "País",
+      nationality: "Nacionalidad", email: "Correo electrónico", optional: "(opcional)",
+      bsnBank: "BSN y cuenta bancaria", bsn: "BSN (número de servicio ciudadano)", bsnHelp: "9 cifras. ¿Aún no tienes BSN? Déjalo vacío.",
+      iban: "Cuenta bancaria (IBAN)", ibanHolder: "Nombre del titular",
+      documents: "Documentos", idType: "Tipo de documento", passport: "Pasaporte", idCard: "DNI / documento de identidad", residence: "Permiso de residencia", otherDoc: "Otro",
+      idFront: "Foto del documento – anverso (página con foto)", idBack: "Foto del documento – reverso", bankCard: "Foto de tu tarjeta bancaria",
+      bankCardHelp: "El nombre y el número de cuenta deben ser legibles. Puedes tapar el número de la tarjeta.", bsnProof: "Prueba del BSN (carta o documento)",
+      submit: "Enviar de forma segura", sending: "Enviando…", safety: "No envíes estos documentos por WhatsApp.",
+      done: "Gracias, hemos recibido tus datos y documentos. Puedes cerrar esta página.",
+      errRequired: "Rellena este campo.", errPostcode: "Comprueba el código postal (p. ej. 3065 GL).", errEmail: "Comprueba el correo electrónico.",
+      errBsn: "Este BSN no es correcto. Comprueba las 9 cifras.", errIban: "Este IBAN no es correcto. Comprueba el número.",
+      errFile: "Añade una foto clara (JPG, PNG) o un PDF, máx. 8 MB.", errGeneral: "No todo está bien rellenado. Revisa los campos en rojo.",
+      errServer: "El envío ha fallado. Inténtalo de nuevo en unos minutos.", privacy: "Declaración de privacidad"
+    },
+    pt: {
+      title: "Processo de pessoal", loading: "A verificar o teu link…", hello: "Olá {name},",
+      invalidLink: "Este link já não é válido. Expirou ou já foi usado. Envia uma mensagem no WhatsApp à NAASSE para receber um novo link.",
+      intro: "Preenche os teus dados e junta uma foto do teu documento de identidade e do teu cartão bancário. Os dados são enviados de forma segura e usados apenas para o teu processo e o processamento salarial.",
+      address: "Morada", street: "Rua", houseNumber: "Número", postcode: "Código postal", city: "Localidade", country: "País",
+      nationality: "Nacionalidade", email: "E-mail", optional: "(opcional)",
+      bsnBank: "BSN e conta bancária", bsn: "BSN (número de serviço ao cidadão)", bsnHelp: "9 dígitos. Ainda não tens BSN? Deixa vazio.",
+      iban: "Conta bancária (IBAN)", ibanHolder: "Nome do titular",
+      documents: "Documentos", idType: "Tipo de documento", passport: "Passaporte", idCard: "Cartão de identidade", residence: "Autorização de residência", otherDoc: "Outro",
+      idFront: "Foto do documento – frente (página com foto)", idBack: "Foto do documento – verso", bankCard: "Foto do teu cartão bancário",
+      bankCardHelp: "O nome e o número da conta devem estar legíveis. Podes tapar o número do cartão.", bsnProof: "Comprovativo do BSN (carta ou documento)",
+      submit: "Enviar com segurança", sending: "A enviar…", safety: "Não envies estes documentos pelo WhatsApp.",
+      done: "Obrigado, recebemos os teus dados e documentos. Podes fechar esta página.",
+      errRequired: "Preenche este campo.", errPostcode: "Verifica o código postal (ex. 3065 GL).", errEmail: "Verifica o e-mail.",
+      errBsn: "Este BSN não está correto. Verifica os 9 dígitos.", errIban: "Este IBAN não está correto. Verifica o número.",
+      errFile: "Junta uma foto nítida (JPG, PNG) ou PDF, máx. 8 MB.", errGeneral: "Nem tudo está bem preenchido. Verifica os campos a vermelho.",
+      errServer: "O envio falhou. Tenta novamente daqui a alguns minutos.", privacy: "Declaração de privacidade"
+    },
+    ar: {
+      title: "الملف الوظيفي", loading: "جارٍ التحقق من الرابط…", hello: "مرحبًا {name}،",
+      invalidLink: "هذا الرابط لم يعد صالحًا. ربما انتهت صلاحيته أو تم استخدامه. أرسل رسالة واتساب إلى NAASSE للحصول على رابط جديد.",
+      intro: "يرجى إدخال بياناتك وإضافة صورة لبطاقة هويتك وبطاقتك البنكية. تُرسل بياناتك بشكل آمن وتُستخدم فقط لملفك الوظيفي وكشوف الرواتب.",
+      address: "العنوان", street: "الشارع", houseNumber: "رقم المنزل", postcode: "الرمز البريدي", city: "المدينة", country: "البلد",
+      nationality: "الجنسية", email: "البريد الإلكتروني", optional: "(اختياري)",
+      bsnBank: "رقم BSN والحساب البنكي", bsn: "رقم BSN", bsnHelp: "9 أرقام. إذا لم يكن لديك BSN بعد فاترك الحقل فارغًا.",
+      iban: "الحساب البنكي (IBAN)", ibanHolder: "اسم صاحب الحساب",
+      documents: "المستندات", idType: "نوع الهوية", passport: "جواز سفر", idCard: "بطاقة هوية", residence: "تصريح إقامة", otherDoc: "أخرى",
+      idFront: "صورة الهوية – الوجه (الصفحة التي بها الصورة)", idBack: "صورة الهوية – الظهر", bankCard: "صورة البطاقة البنكية",
+      bankCardHelp: "يجب أن يكون الاسم ورقم الحساب واضحين. يمكنك تغطية رقم البطاقة.", bsnProof: "إثبات رقم BSN (رسالة أو مستند)",
+      submit: "إرسال آمن", sending: "جارٍ الإرسال…", safety: "لا ترسل هذه المستندات عبر واتساب.",
+      done: "شكرًا، لقد استلمنا بياناتك ومستنداتك. يمكنك إغلاق هذه الصفحة.",
+      errRequired: "يرجى ملء هذا الحقل.", errPostcode: "تحقق من الرمز البريدي (مثال 3065 GL).", errEmail: "تحقق من البريد الإلكتروني.",
+      errBsn: "رقم BSN غير صحيح. تحقق من الأرقام التسعة.", errIban: "رقم IBAN غير صحيح. تحقق من الرقم.",
+      errFile: "أضف صورة واضحة (JPG أو PNG) أو ملف PDF بحد أقصى 8 ميغابايت.", errGeneral: "بعض الحقول غير صحيحة. تحقق من الحقول الحمراء.",
+      errServer: "فشل الإرسال. حاول مرة أخرى بعد بضع دقائق.", privacy: "بيان الخصوصية"
+    },
+    uk: {
+      title: "Особова справа", loading: "Перевіряємо посилання…", hello: "Вітаємо, {name},",
+      invalidLink: "Це посилання більше не дійсне. Термін дії минув або його вже використано. Напишіть NAASSE у WhatsApp, щоб отримати нове посилання.",
+      intro: "Заповніть свої дані та додайте фото документа, що посвідчує особу, і банківської картки. Дані передаються захищено й використовуються лише для особової справи та нарахування зарплати.",
+      address: "Адреса", street: "Вулиця", houseNumber: "Номер будинку", postcode: "Поштовий індекс", city: "Місто", country: "Країна",
+      nationality: "Громадянство", email: "Е-пошта", optional: "(необов'язково)",
+      bsnBank: "BSN і банківський рахунок", bsn: "BSN (номер громадянина)", bsnHelp: "9 цифр. Ще немає BSN? Залиште порожнім.",
+      iban: "Банківський рахунок (IBAN)", ibanHolder: "Ім'я власника рахунку",
+      documents: "Документи", idType: "Тип документа", passport: "Паспорт", idCard: "ID-картка", residence: "Дозвіл на проживання", otherDoc: "Інше",
+      idFront: "Фото документа – лицьовий бік (сторінка з фото)", idBack: "Фото документа – зворотний бік", bankCard: "Фото банківської картки",
+      bankCardHelp: "Ім'я та номер рахунку мають бути читабельними. Номер картки можна закрити.", bsnProof: "Підтвердження BSN (лист або документ)",
+      submit: "Надіслати захищено", sending: "Надсилання…", safety: "Не надсилайте ці документи через WhatsApp.",
+      done: "Дякуємо, ми отримали ваші дані та документи. Цю сторінку можна закрити.",
+      errRequired: "Заповніть це поле.", errPostcode: "Перевірте індекс (наприклад 3065 GL).", errEmail: "Перевірте адресу е-пошти.",
+      errBsn: "BSN неправильний. Перевірте 9 цифр.", errIban: "IBAN неправильний. Перевірте номер.",
+      errFile: "Додайте чітке фото (JPG, PNG) або PDF, до 8 МБ.", errGeneral: "Не все заповнено правильно. Перевірте червоні поля.",
+      errServer: "Не вдалося надіслати. Спробуйте за кілька хвилин.", privacy: "Заява про конфіденційність"
+    }
+  };
+  // Twi en Pidgin: Engelse teksten (te weinig zekerheid over goede vertalingen voor formulieren).
+  T.tw = T.en; T.pcm = T.en;
+  var LANG_NAMES = { en: "English", nl: "Nederlands", ro: "Română", ar: "العربية", fr: "Français", es: "Español", pt: "Português", uk: "Українська", tw: "Twi", pcm: "Pidgin" };
+  var COUNTRIES = [["NL","Nederland"],["BE","België"],["DE","Deutschland"],["PL","Polska"],["RO","România"],["BG","България"],["PT","Portugal"],["ES","España"],["FR","France"],["IT","Italia"],["GB","United Kingdom"],["GH","Ghana"],["NG","Nigeria"],["GW","Guiné-Bissau"],["GM","The Gambia"],["SN","Sénégal"],["SL","Sierra Leone"],["UA","Україна"],["MA","المغرب"],["OT","Other / Anders"]];
+
+  var token = (location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,})/) || [])[1] || "";
+  // Token uit de adresbalk halen, zodat hij niet in de geschiedenis of bij een screenshot blijft staan.
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
+
+  var lang = "en", firstName = "";
+  var $ = function (id) { return document.getElementById(id); };
+
+  function t(key) { return (T[lang] && T[lang][key]) || T.en[key] || ""; }
+  function render() {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    $("hello").textContent = firstName ? t("hello").replace("{name}", firstName) : "";
+    $("submit").textContent = t("submit");
+  }
+
+  var sel = $("lang");
+  Object.keys(LANG_NAMES).forEach(function (code) { var o = document.createElement("option"); o.value = code; o.textContent = LANG_NAMES[code]; sel.appendChild(o); });
+  sel.addEventListener("change", function () { lang = sel.value; render(); });
+  var csel = $("country");
+  COUNTRIES.forEach(function (c) { var o = document.createElement("option"); o.value = c[0]; o.textContent = c[1]; csel.appendChild(o); });
+
+  function toggleBack() { $("backField").style.display = $("idType").value === "passport" ? "none" : ""; }
+  $("idType").value = "id_card"; toggleBack();
+  $("idType").addEventListener("change", toggleBack);
+
+  ["id_front","id_back","bank_card","bsn_proof"].forEach(function (id) {
+    $(id).addEventListener("change", function () {
+      var f = $(id).files[0], img = $(id).parentNode.querySelector(".preview");
+      if (f && f.type.indexOf("image/") === 0) { img.src = URL.createObjectURL(f); img.style.display = "block"; } else { img.style.display = "none"; }
+    });
+  });
+
+  // Foto's verkleinen naar max. 2000 px en als JPEG versturen (sneller en kleiner).
+  function shrink(file) {
+    return new Promise(function (resolve) {
+      if (!file || file.type.indexOf("image/") !== 0 || file.type === "image/gif") return resolve(file);
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        var max = 2000, w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, max / Math.max(w, h));
+        var c = document.createElement("canvas"); c.width = Math.round(w * s); c.height = Math.round(h * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { resolve(b || file); }, "image/jpeg", 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  }
+
+  function bsnOk(v) {
+    v = v.replace(/\D/g, ""); if (v === "") return true; if (v.length === 8) v = "0" + v; if (v.length !== 9) return false;
+    var s = 0; for (var i = 0; i < 8; i++) s += Number(v[i]) * (9 - i); s -= Number(v[8]); return s % 11 === 0 && s !== 0;
+  }
+  function ibanOk(v) {
+    v = v.replace(/\s+/g, "").toUpperCase(); if (!/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(v)) return false;
+    if (v.indexOf("NL") === 0 && v.length !== 18) return false;
+    var r = v.slice(4) + v.slice(0, 4), rem = 0;
+    for (var i = 0; i < r.length; i++) { var ch = r[i], d = ch >= "A" && ch <= "Z" ? String(ch.charCodeAt(0) - 55) : ch; for (var j = 0; j < d.length; j++) rem = (rem * 10 + Number(d[j])) % 97; }
+    return rem === 1;
+  }
+
+  function mark(fields) {
+    document.querySelectorAll(".field").forEach(function (el) { el.classList.toggle("invalid", fields.indexOf(el.getAttribute("data-f")) >= 0); });
+  }
+  function checkLocal() {
+    var bad = [], v = function (id) { return $(id).value.trim(); };
+    if (v("street").length < 2) bad.push("street");
+    if (!/^\d+/.test(v("houseNumber"))) bad.push("houseNumber");
+    if ($("country").value === "NL" ? !/^\d{4}\s?[A-Za-z]{2}$/.test(v("postcode")) : v("postcode").length < 3) bad.push("postcode");
+    if (v("city").length < 2) bad.push("city");
+    if (v("email") && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v("email"))) bad.push("email");
+    if (!bsnOk(v("bsn"))) bad.push("bsn");
+    if (!ibanOk(v("iban"))) bad.push("iban");
+    if (v("ibanHolder").length < 2) bad.push("ibanHolder");
+    if (!$("id_front").files[0]) bad.push("id_front");
+    if ($("idType").value !== "passport" && !$("id_back").files[0]) bad.push("id_back");
+    if (!$("bank_card").files[0]) bad.push("bank_card");
+    return bad;
+  }
+
+  $("form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    $("formError").style.display = "none";
+    var bad = checkLocal(); mark(bad);
+    if (bad.length) { $("formError").textContent = t("errGeneral"); $("formError").style.display = "block"; return; }
+    var btn = $("submit"); btn.disabled = true; btn.textContent = t("sending");
+    var fd = new FormData();
+    fd.append("token", token);
+    ["street","houseNumber","postcode","city","country","nationality","email","bsn","iban","ibanHolder","idType"].forEach(function (k) { fd.append(k, $(k).value.trim()); });
+    var kinds = ["id_front","bank_card","bsn_proof"]; if ($("idType").value !== "passport") kinds.push("id_back");
+    Promise.all(kinds.map(function (k) { return shrink($(k).files[0]).then(function (b) { if (b) fd.append(k, b, k + (b.type === "application/pdf" ? ".pdf" : ".jpg")); }); }))
+      .then(function () { return fetch(API, { method: "POST", body: fd, credentials: "omit", referrerPolicy: "no-referrer" }); })
+      .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+      .then(function (res) {
+        if (res.status === 200) { $("form").style.display = "none"; $("done").style.display = "block"; window.scrollTo(0, 0); return; }
+        if (res.status === 410) { $("form").style.display = "none"; $("linkError").style.display = "block"; return; }
+        if (res.status === 422 && res.body && res.body.fields) {
+          var f = res.body.fields.slice();
+          if (f.indexOf("file_type") >= 0 || f.indexOf("file_size") >= 0) f.push("id_front", "id_back", "bank_card");
+          mark(f); $("formError").textContent = t("errGeneral");
+        } else { $("formError").textContent = t("errServer"); }
+        $("formError").style.display = "block"; btn.disabled = false; btn.textContent = t("submit");
+      })
+      .catch(function () { $("formError").textContent = t("errServer"); $("formError").style.display = "block"; btn.disabled = false; btn.textContent = t("submit"); });
+  });
+
+  // Start: link controleren.
+  var nav = (navigator.language || "en").slice(0, 2); lang = T[nav] ? nav : "en"; sel.value = lang; render();
+  if (!token) { $("loading").style.display = "none"; $("linkError").style.display = "block"; return; }
+  fetch(API, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "info", token: token }), credentials: "omit", referrerPolicy: "no-referrer" })
+    .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+    .then(function (res) {
+      $("loading").style.display = "none";
+      if (res.status !== 200) { $("linkError").style.display = "block"; return; }
+      firstName = res.body.firstName || "";
+      if (res.body.language && T[res.body.language]) { lang = res.body.language; sel.value = lang; }
+      render(); $("form").style.display = "block";
+    })
+    .catch(function () { $("loading").style.display = "none"; $("formError").textContent = t("errServer"); $("formError").style.display = "block"; });
+})();
+</script>
+</body>
+</html>
